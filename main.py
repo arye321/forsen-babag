@@ -9,7 +9,7 @@ class Item(BaseModel):
     name: str
 
 app = FastAPI()
-app.mount("/babag", StaticFiles(directory="babag"), name="babag")
+# app.mount("/babag", StaticFiles(directory="babag"), name="babag")
 
 # @app.post("/uploadfile/")
 # async def create_upload_file(file: UploadFile | None = None):
