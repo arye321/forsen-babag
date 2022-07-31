@@ -11,20 +11,20 @@ class Item(BaseModel):
 app = FastAPI()
 app.mount("/babag", StaticFiles(directory="babag"), name="babag")
 
-@app.post("/uploadfile/")
-async def create_upload_file(file: UploadFile | None = None):
-    if not file:
-        return {"message": "No upload file sent"}
-    else:
-        try:
-            contents = await file.read()
-            with open(file.filename, 'wb') as f:
-                f.write(contents)
-        except Exception:
-            return {"message": "There was an error uploading the file"}
-        finally:
-            await file.close()
-        return {"filename": file.filename}
+# @app.post("/uploadfile/")
+# async def create_upload_file(file: UploadFile | None = None):
+#     if not file:
+#         return {"message": "No upload file sent"}
+#     else:
+#         try:
+#             contents = await file.read()
+#             with open(file.filename, 'wb') as f:
+#                 f.write(contents)
+#         except Exception:
+#             return {"message": "There was an error uploading the file"}
+#         finally:
+#             await file.close()
+#         return {"filename": file.filename}
 
 @app.post("/items/", response_class=PlainTextResponse)
 async def create_item(item: Item):
