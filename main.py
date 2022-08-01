@@ -42,10 +42,11 @@ async def root():
 # </body>
 #         """
     content = """
-    <html>
-    <script async defer data-website-id="45cf2e8f-4f27-4acd-8cb5-fe92ab26d586" src="http://ip172-18-0-34-cbjm83244gtg00fvtq8g-3000.direct.labs.play-with-docker.com/umami.js"></script>
-    <h1> Welcome to zombocom</h1>
-    </html>
+    <!DOCTYPE html>
+        <html>
+            <script async defer data-website-id="3e4034d3-d98c-49ab-88ca-c021544e8194" src="https://arye321-umami-g4gvvxr4cvpj6-3000.githubpreview.dev/umami.js"></script>
+            <h1> Welcome to zombocom</h1>
+        </html>
     """
     return HTMLResponse(content=content)
 
