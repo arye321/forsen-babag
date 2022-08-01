@@ -44,7 +44,7 @@ async def root():
     content = """
     <!DOCTYPE html>
         <html>
-            <script async defer data-website-id="3e4034d3-d98c-49ab-88ca-c021544e8194" src="https://arye321-umami-g4gvvxr4cvpj6-3000.githubpreview.dev/umami.js"></script>
+            <script async defer data-website-id="3e4034d3-d98c-49ab-88ca-c021544e8194" src="https://arye321-umami-g4gvvxr4cvpj6-3000.githubpreview.dev/xd.js"></script>
             <h1> Welcome to zombocom</h1>
         </html>
     """
