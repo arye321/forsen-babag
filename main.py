@@ -1,30 +1,36 @@
 # uvicorn main:app --reload
+import os
 from fastapi import FastAPI, UploadFile
 from pydantic import BaseModel
 from fastapi.responses import PlainTextResponse,HTMLResponse
 from starlette.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
+from pathlib import Path
 
 class Item(BaseModel):
     name: str
 
 app = FastAPI()
-# app.mount("/babag", StaticFiles(directory="babag"), name="babag")
+app.mount("/babag", StaticFiles(directory="babag"), name="babag")
 
-# @app.post("/uploadfile/")
-# async def create_upload_file(file: UploadFile | None = None):
-#     if not file:
-#         return {"message": "No upload file sent"}
-#     else:
-#         try:
-#             contents = await file.read()
-#             with open(file.filename, 'wb') as f:
-#                 f.write(contents)
-#         except Exception:
-#             return {"message": "There was an error uploading the file"}
-#         finally:
-#             await file.close()
-#         return {"filename": file.filename}
+@app.post("/uploadfile/")
+async def create_upload_file(file: UploadFile | None = None):
+    if not file:
+        return {"message": "No upload file sent"}
+    else:
+        try:
+            contents = await file.read()
+            with open(f'./babag/xd {file.filename}', 'wb') as f:
+                f.write(contents)
+            with open(f"./babag/{file.filename}", "w") as f:
+                f.write(f"""<iframe srcdoc="<h1> Loading...</h1>" onload="this.removeAttribute('srcdoc')" id="igraph" scrolling="no" style="border:none;" seamless="seamless" src="xd {file.filename}" height="525" width="100%"></iframe>""")
+        except Exception:
+            print('xd')
+            return {"message": "There was an error uploading the file"}
+        finally:
+            if file:
+                await file.close()
+        return {"filename": file.filename}
 
 @app.post("/items/", response_class=PlainTextResponse)
 async def create_item(item: Item):
@@ -32,22 +38,25 @@ async def create_item(item: Item):
     
 @app.get("/")
 async def root():
-#     paths = sorted(Path("./babag").iterdir(), key=os.path.getmtime)
-#     links =''
-#     for i in paths:
-#         links+=f'<a href="/babag/{i.name}">{i.name}<br>'
-#     content = f"""
-# <body>
-# {links}
-# </body>
-#         """
-    content = """
-    <!DOCTYPE html>
-        <html>
-            <script async defer data-website-id="3e4034d3-d98c-49ab-88ca-c021544e8194" src="https://babag.vercel.app/xd.js"></script>
-            <h1> Welcome to zombocom</h1>
-        </html>
-    """
+    paths = sorted(Path("./babag").iterdir(), key=os.path.getmtime)
+    links =''
+    for i in paths:
+        if "xd" not in i.name:
+            links+=f'<a href="/babag/{i.name}">{i.name}</a><br>'
+    content = f"""
+<body>
+<script async defer data-website-id="3e4034d3-d98c-49ab-88ca-c021544e8194" src="https://babag.vercel.app/xd.js"></script>
+{links}
+<h1> Welcome to zombocom</h1>
+</body>
+        """
+    # content = """
+    # <!DOCTYPE html>
+    #     <html>
+    #         <script async defer data-website-id="3e4034d3-d98c-49ab-88ca-c021544e8194" src="https://babag.vercel.app/xd.js"></script>
+    #         <h1> Welcome to zombocom</h1>
+    #     </html>
+    # """
     return HTMLResponse(content=content)
 
 @app.get("/items/", response_class=PlainTextResponse)
