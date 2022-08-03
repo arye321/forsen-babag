@@ -20,12 +20,9 @@ async def create_upload_file(file: UploadFile | None = None):
     else:
         try:
             contents = await file.read()
-            with open(f'./babag/xd {file.filename}', 'wb') as f:
+            with open(f'./babag/{file.filename}', 'wb') as f:
                 f.write(contents)
-            with open(f"./babag/{file.filename}", "w") as f:
-                f.write(f"""<iframe srcdoc="<h1> Loading...</h1>" onload="this.removeAttribute('srcdoc')" id="igraph" scrolling="no" style="border:none;" seamless="seamless" src="xd {file.filename}" height="525" width="100%"></iframe>""")
         except Exception:
-            print('xd')
             return {"message": "There was an error uploading the file"}
         finally:
             if file:
@@ -42,7 +39,9 @@ async def root():
     links =''
     for i in paths:
         if "xd" not in i.name:
-            links+=f'<a href="/babag/{i.name}">{i.name}</a><br>'
+            
+            htmlname = i.name.split('.')[0]
+            links+=f'<a href="/r/{htmlname}">{htmlname}</a><br>'
     content = f"""
 <body>
 <script async defer data-website-id="3e4034d3-d98c-49ab-88ca-c021544e8194" src="https://babag.vercel.app/xd.js"></script>
@@ -66,3 +65,29 @@ async def lol():
 @app.get('/favicon.ico', include_in_schema=False)
 async def favicon():
     return FileResponse('favicon.ico')# uvicorn main:app --reload
+
+@app.get("/r/{stream}")
+async def read_item(stream: str):
+    if os.path.isfile(f'./babag/{stream}.html'):
+        content=f"""
+            <body>
+                <iframe 
+                    srcdoc="<h1>Loading...</h1>" 
+                    onload="this.removeAttribute('srcdoc')" 
+                    id="igraph" 
+                    scrolling="no" 
+                    style="border:none;" 
+                    seamless="seamless" 
+                    src="/babag/{stream}.html" 
+                    height="525" width="100%">
+                </iframe>
+            </body>
+
+        """
+        return HTMLResponse(content=content)
+    else:
+        return "Something went wrong"
+        
+
+# uvicorn main:app --reload
+#/workspaces/forsen-babag/babag/xd forsen 30-07-2022 21h52m53s.html
