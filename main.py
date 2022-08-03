@@ -22,6 +22,8 @@ async def create_upload_file(file: UploadFile | None = None):
             contents = await file.read()
             with open(f'./babag/{file.filename}', 'wb') as f:
                 f.write(contents)
+            with open("streams.txt", "a") as f:
+                f.write(f"\n{file.filename}")
         except Exception:
             return {"message": "There was an error uploading the file"}
         finally:
@@ -35,13 +37,18 @@ async def create_item(item: Item):
     
 @app.get("/")
 async def root():
-    paths = sorted(Path("./babag").iterdir(), key=os.path.getmtime)
+
     links =''
-    for i in paths:
-        if "xd" not in i.name:
-            
-            htmlname = i.name.split('.')[0]
-            links+=f'<a href="/r/{htmlname}">{htmlname}</a><br>'
+    lines = ''
+    try:
+        with open("streams.txt") as file:
+            lines = file.readlines()
+            lines = [line.strip() for line in lines]
+        for i in lines:
+                htmlname = i.split('.')[0]
+                links+=f'<a href="/r/{htmlname}">{htmlname}</a><br>'
+    except Exception:
+        return "Something went wrong"
     content = f"""
 <body>
 <script async defer data-website-id="3e4034d3-d98c-49ab-88ca-c021544e8194" src="https://babag.vercel.app/xd.js"></script>
