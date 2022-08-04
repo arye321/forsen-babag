@@ -1,34 +1,46 @@
 # uvicorn main:app --reload
 import os
-from fastapi import FastAPI, UploadFile,Form
+from fastapi import FastAPI, UploadFile,Form, Request
 from pydantic import BaseModel
 from fastapi.responses import PlainTextResponse,HTMLResponse
 from starlette.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv()
 
 uploadaddress = os.getenv('UPADD', '')
 assert uploadaddress, "uploadaddress is empty"
 
-print (uploadaddress)
+
+
 class Item(BaseModel):
     key: str
-
-app = FastAPI()
+if os.getenv('DEBUG'):
+    app = FastAPI()
+else:
+    app = FastAPI(docs_url=None, redoc_url=None)
+    
 app.mount("/babag", StaticFiles(directory="babag"), name="babag")
+@app.post(f"/testform/")
+async def testfor(key: str = Form(''),lol:int= Form(2)):
+    return f'{key},{lol}'
+
 
 @app.post(f"/{uploadaddress}/")
-async def testupload(key: str = Form(...), file: UploadFile | None = None):
-    forsankey = os.getenv('FORSAN', '')
-    if forsankey and key == forsankey:
-        return f"key = {key}, file={file.filename}"
+async def testupload(request: Request,key: str = Form(...), file: UploadFile | None = None):
+    forsankey = os.getenv('FORSAN')
+    ip = request.client.host
+    if ip==os.getenv('IP') and forsankey and key == forsankey:
+        return f"key = {key}, file={file.filename} host={request.client.host}"
     else:
-        return "something went wrong"
+        return f"something went wrong"
   
 
 @app.post("/uploadfile/")
 async def create_upload_file(key: str = Form(...), file: UploadFile | None = None):
-    forsankey = os.getenv('FORSAN', '')
+    forsankey = os.getenv('FORSAN')
     if forsankey and key == forsankey:
         if not file:
             return {"message": "No upload file sent"}
