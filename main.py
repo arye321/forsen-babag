@@ -9,6 +9,7 @@ from pathlib import Path
 
 uploadaddress = os.getenv('UPADD', '')
 assert uploadaddress, "uploadaddress is empty"
+
 print (uploadaddress)
 class Item(BaseModel):
     key: str
