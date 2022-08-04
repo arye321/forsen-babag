@@ -1,39 +1,56 @@
 # uvicorn main:app --reload
 import os
-from fastapi import FastAPI, UploadFile
+from fastapi import FastAPI, UploadFile,Form
 from pydantic import BaseModel
 from fastapi.responses import PlainTextResponse,HTMLResponse
 from starlette.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pathlib import Path
 
+uploadaddress = os.getenv('UPADD', '')
+assert uploadaddress, "uploadaddress is empty"
+print (uploadaddress)
 class Item(BaseModel):
-    name: str
+    key: str
 
 app = FastAPI()
 app.mount("/babag", StaticFiles(directory="babag"), name="babag")
 
-@app.post("/uploadfile/")
-async def create_upload_file(file: UploadFile | None = None):
-    if not file:
-        return {"message": "No upload file sent"}
+@app.post(f"/{uploadaddress}/")
+async def testupload(key: str = Form(...), file: UploadFile | None = None):
+    forsankey = os.getenv('FORSAN', '')
+    if forsankey and key == forsankey:
+        return f"key = {key}, file={file.filename}"
     else:
-        try:
-            contents = await file.read()
-            with open(f'./babag/{file.filename}', 'wb') as f:
-                f.write(contents)
-            with open("streams.txt", "a") as f:
-                f.write(f"\n{file.filename}")
-        except Exception:
-            return {"message": "There was an error uploading the file"}
-        finally:
-            if file:
-                await file.close()
-        return {"filename": file.filename}
+        return "something went wrong"
+  
+
+@app.post("/uploadfile/")
+async def create_upload_file(key: str = Form(...), file: UploadFile | None = None):
+    forsankey = os.getenv('FORSAN', '')
+    if forsankey and key == forsankey:
+        if not file:
+            return {"message": "No upload file sent"}
+        else:
+            try:
+                contents = await file.read()
+                with open(f'./babag/{file.filename}', 'wb') as f:
+                    f.write(contents)
+                with open("streams.txt", "a") as f:
+                    f.write(f"\n{file.filename}")
+            except Exception:
+                return {"message": "There was an error uploading the file"}
+            finally:
+                if file:
+                    await file.close()
+            return {"filename": file.filename}
+
+    else:
+        return "Something went wrong!"        
 
 @app.post("/items/", response_class=PlainTextResponse)
 async def create_item(item: Item):
-    return f"ok, {item.name}"
+    return f"ok, {item}"
     
 @app.get("/")
 async def root():
